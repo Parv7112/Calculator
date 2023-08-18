@@ -1,110 +1,103 @@
 import React, { useState } from 'react';
 
-function CalculatorForm({
-  num1,
-  num2,
-  operator,
-  onNum1Change,
-  onNum2Change,
-  onOperatorChange,
-  calculateResult,
-  result
-}) {
+function CalculatorForm({ num1, num2, operator, onNum1Change, onNum2Change, onOperatorChange, calculateResult, result }) {
   const [validationErrors, setValidationErrors] = useState({ num1: '', num2: '', operator: '' });
   const [showResult, setShowResult] = useState(false);
 
   const isValidNumber = (value) => !isNaN(value);
 
-  const validateInputs = () => {
+  const handleCalculate = () => {
     const newValidationErrors = {};
 
     if (!num1) newValidationErrors.num1 = 'Please enter a number.';
     if (!num2) newValidationErrors.num2 = 'Please enter a number.';
-
-    if (!isValidNumber(num1)) newValidationErrors.num1 = 'Please enter a valid number.';
-    if (!isValidNumber(num2)) newValidationErrors.num2 = 'Please enter a valid number.';
-
-    setValidationErrors(newValidationErrors);
-    return Object.keys(newValidationErrors).length === 0;
-  };
-
-  const validateOperator = () => {
     if (!operator) {
-      setValidationErrors((prevErrors) => ({
-        ...prevErrors,
-        operator: 'Please select an operator.'
-      }));
-      return false;
-    }
-    return true;
-  };
-
-  const handleCalculate = () => {
-    if (!validateInputs() || !validateOperator()) {
-      alert('Please select an Operator');
-    }
-
-    if (operator === '/' && parseFloat(num2) === 0) {
-      alert('Cannot divide by zero.');
+      newValidationErrors.operator = 'Please select an operator.';
+      setValidationErrors(newValidationErrors);
+      setShowResult(false);
+      window.alert('Please select an operator.');
       return;
     }
 
-    calculateResult();
-    setShowResult(true);
-  };
+    if (!isValidNumber(num1)) newValidationErrors.num1 = 'Please enter a valid number.';
+    if (!isValidNumber(num2)) newValidationErrors.num2 = 'Please enter a valid number.';
+    if (operator === '/' && parseFloat(num2) === 0) {
+      window.alert('Cannot divide by zero.');
+      return;
+    }
 
-  const { num1: num1Error, num2: num2Error } = validationErrors;
+    if (Object.keys(newValidationErrors).length > 0) {
+      setValidationErrors(newValidationErrors);
+      setShowResult(false); 
+      return;
+    }
+
+    setValidationErrors({});
+    calculateResult();
+    setShowResult(true); 
+  };
 
   return (
     <div className="container">
       <div className="row">
         <div className="col-12 text-center mt-3">
           <h1 className="fw-bold mt-4">Calculator</h1>
-
-          <div className={`mb-3 px-5 mt-5 ${num1Error ? 'has-error' : ''}`}>
+          <div className={`mb-3 px-5 mt-5 ${validationErrors.num1 ? 'has-error' : ''}`}>
             <input
-              className={`form-control border ${num1Error ? 'border-danger' : 'border-dark'}`}
+              className={`form-control border ${validationErrors.num1 ? 'border-danger' : 'border-dark'}`}
               type="number"
               value={num1}
               onChange={onNum1Change}
               placeholder="Enter first number"
             />
-            {num1Error && <div className="text-danger text-start">{num1Error}</div>}
+            {validationErrors.num1 && <div className="text-danger text-start">{validationErrors.num1}</div>}
           </div>
 
-          <div className={`py-3 px-5 ${num2Error ? 'has-error' : ''}`}>
+          <div className={`py-3 px-5 ${validationErrors.num2 ? 'has-error' : ''}`}>
             <input
-              className={`form-control border ${num2Error ? 'border-danger' : 'border-dark'}`}
+              className={`form-control border ${validationErrors.num2 ? 'border-danger' : 'border-dark'}`}
               type="number"
               value={num2}
               onChange={onNum2Change}
               placeholder="Enter second number"
             />
-            {num2Error && <div className="text-danger text-start">{num2Error}</div>}
+            {validationErrors.num2 && <div className="text-danger text-start">{validationErrors.num2}</div>}
           </div>
 
           <div className="py-4">
             <div className="btn-group">
-              {['+', '-', '*', '/'].map((op) => (
-                <button
-                  key={op}
-                  className={`btn btn-lg rounded border border-dark ${
-                    operator === op ? 'btn-dark' : 'btn-light'
-                  } me-3 px-5`}
-                  onClick={() => onOperatorChange(op)}
-                >
-                  {op}
-                </button>
-              ))}
+              <button
+                className={`btn btn-lg rounded border border-dark ${operator === '+' ? 'btn-dark' : 'btn-light'} me-3 px-5`}
+                onClick={() => onOperatorChange('+')}
+              >
+                +
+              </button>
+              <button
+                className={`btn btn-lg rounded border border-dark ${operator === '-' ? 'btn-dark' : 'btn-light'} me-3 px-5`}
+                onClick={() => onOperatorChange('-')}
+              >
+                -
+              </button>
+              <button
+                className={`btn btn-lg rounded border border-dark ${operator === '*' ? 'btn-dark' : 'btn-light'} me-3 px-5`}
+                onClick={() => onOperatorChange('*')}
+              >
+                x
+              </button>
+              <button
+                className={`btn btn-lg rounded border border-dark ${operator === '/' ? 'btn-dark' : 'btn-light'} px-5`}
+                onClick={() => onOperatorChange('/')}
+              >
+                /
+              </button>
             </div>
           </div>
 
           <button className="btn btn-lg btn-success fw-bolder" onClick={handleCalculate}>
             Calculate
           </button>
-
           <div className="mt-3 fw-bold fs-4">
-            {showResult && `Result: ${result !== '' ? result : 'N/A'}`}
+            {showResult ? `Result: ${result !== '' ? result : 'N/A'}` : ''}
           </div>
         </div>
       </div>
