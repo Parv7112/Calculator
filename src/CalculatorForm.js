@@ -41,7 +41,7 @@ function CalculatorForm({ num1, num2, operator, onNum1Change, onNum2Change, onOp
     <div className="container">
       <div className="row">
         <div className="col-12 text-center mt-3">
-          <h1 className="fw-bold mt-4">Calculator</h1>
+          <h1 className="fw-bold mt-4">My Calculator</h1>
           <div className={`mb-3 px-5 mt-5 ${validationErrors.num1 ? 'has-error' : ''}`}>
             <input
               className={`form-control border ${validationErrors.num1 ? 'border-danger' : 'border-dark'}`}
